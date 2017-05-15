@@ -10,6 +10,16 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+## [v7.1][2017-05-15]
+### Fixed
+
+### Added
+- Retries to Register/Sync services based on -retry-attempts and -retry-interval parameters if request fails
+
+### Removed
+
+### Changed
+
 ## [v7] - 2016-03-05
 ### Fixed
 - Providing a SERVICE_NAME for a container with multiple ports exposed would cause services to overwrite each other
