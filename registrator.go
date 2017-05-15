@@ -105,6 +105,8 @@ func main() {
 		RefreshInterval: *refreshInterval,
 		DeregisterCheck: *deregister,
 		Cleanup:         *cleanup,
+		RetryAttempts:   *retryAttempts,
+		RetryInterval:	 *retryInterval,
 	})
 
 	assert(err)
