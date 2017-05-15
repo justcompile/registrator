@@ -28,6 +28,8 @@ type Config struct {
 	RefreshInterval int
 	DeregisterCheck string
 	Cleanup         bool
+	RetryAttempts   int
+	RetryInterval   int
 }
 
 type Service struct {
