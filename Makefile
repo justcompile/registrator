@@ -17,11 +17,11 @@ release:
 	rm -rf release && mkdir release
 	go get github.com/progrium/gh-release/...
 	cp build/* release
-	gh-release create gliderlabs/$(NAME) $(VERSION) \
+	gh-release create justcompile/$(NAME) $(VERSION) \
 		$(shell git rev-parse --abbrev-ref HEAD) $(VERSION)
 
 docs:
-	boot2docker ssh "sync; sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'" || true
+	# boot2docker ssh "sync; sudo sh -c 'echo 3 > /proc/sys/vm/drop_caches'" || true
 	docker run --rm -it -p 8000:8000 -v $(PWD):/work gliderlabs/pagebuilder mkdocs serve
 
 circleci:
