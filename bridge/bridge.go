@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	dockerapi "github.com/fsouza/go-dockerclient"
 )
@@ -236,13 +237,25 @@ func (b *Bridge) add(containerId string, quiet bool) {
 			}
 			continue
 		}
-		err := b.registry.Register(service)
-		if err != nil {
-			log.Println("register failed:", service, err)
-			continue
+
+		attempt := 0
+		for b.config.RetryAttempts == -1 || attempt <= b.config.RetryAttempts {
+			log.Printf("Registering service (%v/%v): %s", attempt, b.config.RetryAttempts, service.ID)
+
+			err := b.registry.Register(service)
+			if err == nil {
+				b.services[container.ID] = append(b.services[container.ID], service)
+				log.Println("added:", container.ID[:12], service.ID)
+				break
+			}
+
+			if err != nil && attempt == b.config.RetryAttempts {
+				log.Println("register failed:", service, err)
+			}
+
+			time.Sleep(time.Duration(b.config.RetryInterval) * time.Millisecond)
+			attempt++
 		}
-		b.services[container.ID] = append(b.services[container.ID], service)
-		log.Println("added:", container.ID[:12], service.ID)
 	}
 }
 
