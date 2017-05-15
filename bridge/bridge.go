@@ -109,10 +109,22 @@ func (b *Bridge) Sync(quiet bool) {
 			b.add(listing.ID, quiet)
 		} else {
 			for _, service := range services {
-				err := b.registry.Register(service)
-				if err != nil {
-					log.Println("sync register failed:", service, err)
-				}
+				attempt := 0
+				for b.config.RetryAttempts == -1 || attempt <= b.config.RetryAttempts {
+					log.Printf("Sync register service (%v/%v): %s", attempt, b.config.RetryAttempts, service.ID)
+
+					err := b.registry.Register(service)
+					if err == nil {
+						break
+					}
+
+					if err != nil && attempt == b.config.RetryAttempts {
+						log.Println("sync register failed:", service, err)
+					}
+
+					time.Sleep(time.Duration(b.config.RetryInterval) * time.Millisecond)
+					attempt++
+				}				
 			}
 		}
 	}
